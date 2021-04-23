@@ -52,8 +52,7 @@ jobs:
         env:
           TAG_PREFIX: refs/tags/v
 
-
-- name: Enable NPM cache
+      - name: Enable NPM cache
         uses: actions/cache@v2
         with:
           path: '~/.npm'
