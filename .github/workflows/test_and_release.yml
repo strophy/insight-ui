@@ -39,8 +39,9 @@ jobs:
       # - name: Run tests
       #   run: npm run test
 
-  release:
-    name: Release NPM package and Docker image
+
+  release-npm:
+    name: Release NPM package
     runs-on: ubuntu-20.04
     needs: test
     if: ${{ github.event_name == 'release' }}
@@ -78,6 +79,14 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           tag: ${{ steps.tag.outputs.result }}
+
+  release-docker:
+    name: Release Docker image
+    runs-on: ubuntu-20.04
+    needs: test
+    if: ${{ github.event_name == 'release' }}
+    steps:
+      - uses: actions/checkout@v2
 
       - name: Set up Docker BuildX
         uses: docker/setup-buildx-action@v1
