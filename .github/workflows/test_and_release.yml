@@ -118,6 +118,16 @@ jobs:
           result-encoding: string
           script: "return (context.payload.release.tag_name.includes('-dev') ? '-dev' : '');"
 
+      - name: Set release tag
+        uses: actions/github-script@v3
+        id: tag
+        with:
+          result-encoding: string
+          script: |
+            const tag = context.payload.release.tag_name;
+            const [, major,] = tag.match(/^v([0-9]+)/);
+            return major;
+
       - name: Set Docker tags and labels
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v2
@@ -144,6 +154,9 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args:
+            - VERSION=${{ steps.docker_meta_outputs.version }}
+            - MAJOR_VERSION=${{ steps.tag.outputs.result }}
 
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
